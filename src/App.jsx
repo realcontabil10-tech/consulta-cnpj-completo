@@ -49,14 +49,10 @@ export default function App() {
       );
 
       if (!res.ok) {
-        throw new Error("CNPJ não encontrado ou erro na API");
+        throw new Error("CNPJ não encontrado");
       }
 
       const json = await res.json();
-
-      if (!json || !json.razao_social) {
-        throw new Error("CNPJ inválido ou sem dados disponíveis");
-      }
 
       setData(json);
 
@@ -119,27 +115,35 @@ export default function App() {
         minHeight: "100vh",
         color: "#fff",
         padding: 20,
+        fontFamily: "Arial",
       }}
     >
       <div
         ref={pdfRef}
         style={{
-          maxWidth: 1000,
+          maxWidth: 1200,
           margin: "0 auto",
           background: "#111",
           padding: 20,
-          borderRadius: 10,
+          borderRadius: 12,
         }}
       >
-        <h1 style={{ textAlign: "center" }}>
+        <h1
+          style={{
+            textAlign: "center",
+            marginBottom: 30,
+          }}
+        >
           Consulta CNPJ Completo
         </h1>
 
+        {/* INPUT */}
         <div
           style={{
             display: "flex",
-            gap: 10,
-            margin: "20px 0",
+            flexDirection: "column",
+            gap: 15,
+            marginBottom: 25,
           }}
         >
           <input
@@ -149,275 +153,157 @@ export default function App() {
             }
             placeholder="00.000.000/0000-00"
             style={{
-              flex: 1,
-              padding: 10,
+              width: "100%",
+              padding: 14,
+              borderRadius: 8,
+              border: "1px solid #333",
+              background: "#1a1a1a",
+              color: "#fff",
+              fontSize: 16,
+              boxSizing: "border-box",
             }}
           />
 
-          <button
-            onClick={consultar}
-            disabled={loading}
+          {/* BOTÕES */}
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: 10,
+            }}
           >
-            {loading
-              ? "Consultando..."
-              : "Consultar"}
-          </button>
+            <button
+              onClick={consultar}
+              disabled={loading}
+              style={{
+                background: "#fff",
+                color: "#000",
+                border: "none",
+                padding: "12px 18px",
+                borderRadius: 8,
+                cursor: "pointer",
+                fontWeight: "bold",
+              }}
+            >
+              {loading
+                ? "Consultando..."
+                : "Consultar"}
+            </button>
 
-          <button onClick={gerarPDF}>
-            Gerar PDF
-          </button>
-          <button
-  onClick={() =>
-    window.open(
-      "https://servicos.receitafederal.gov.br/servico/certidoes/#/home/cnpj"
-    )
-  }
->
-  Certidão Federal
-</button>
+            <button
+              onClick={gerarPDF}
+              style={botao}
+            >
+              Gerar PDF
+            </button>
 
-<button
-  onClick={() =>
-    window.open(
-      "https://www.sefaz.go.gov.br/certidao/emissao/"
-    )
-  }
->
-  Certidão Estadual GO
-</button>
+            <button
+              onClick={() =>
+                window.open(
+                  "https://servicos.receitafederal.gov.br/servico/certidoes/#/home/cnpj"
+                )
+              }
+              style={botao}
+            >
+              Certidão Federal
+            </button>
 
-<button
-  onClick={() =>
-    window.open(
-      "https://consulta-crf.caixa.gov.br/consultacrf/pages/consultaEmpregador.jsf"
-    )
-  }
->
-  FGTS
-</button>
+            <button
+              onClick={() =>
+                window.open(
+                  "https://www.sefaz.go.gov.br/certidao/emissao/"
+                )
+              }
+              style={botao}
+            >
+              Certidão Estadual GO
+            </button>
 
-<button
-  onClick={() =>
-    window.open(
-      "https://cndt-certidao.tst.jus.br/inicio.faces"
-    )
-  }
->
-  Trabalhista
-  <button
-  onClick={() =>
-    window.open(
-      "https://varjao.centi.com.br/servicos/certidaonegativa"
-    )
-  }
->
-  Certidão Municipal Varjão
-</button>
-</button>
+            <button
+              onClick={() =>
+                window.open(
+                  "https://consulta-crf.caixa.gov.br/consultacrf/pages/consultaEmpregador.jsf"
+                )
+              }
+              style={botao}
+            >
+              FGTS
+            </button>
+
+            <button
+              onClick={() =>
+                window.open(
+                  "https://cndt-certidao.tst.jus.br/inicio.faces"
+                )
+              }
+              style={botao}
+            >
+              Trabalhista
+            </button>
+
+            <button
+              onClick={() =>
+                window.open(
+                  "https://varjao.centi.com.br/servicos/certidaonegativa"
+                )
+              }
+              style={botao}
+            >
+              Certidão Municipal
+            </button>
+          </div>
         </div>
 
         {loading && (
-          <p>🔄 Buscando dados... aguarde</p>
+          <p>Consultando...</p>
         )}
 
         {erro && (
           <p style={{ color: "red" }}>
-            ❌ {erro}
+            {erro}
           </p>
         )}
 
         {data && (
           <>
-            {/* EMPRESA */}
-            <div
-              style={{
-                background: "#000",
-                padding: 15,
-                marginBottom: 20,
-              }}
-            >
-              <h2>Empresa</h2>
+            <Card title="Empresa">
+              <p><b>Razão Social:</b> {data.razao_social}</p>
+              <p><b>Fantasia:</b> {data.nome_fantasia || "-"}</p>
+              <p><b>Capital:</b> {formatMoney(data.capital_social)}</p>
+              <p><b>Porte:</b> {data.porte?.descricao}</p>
+            </Card>
 
-              <p>
-                <b>Razão Social:</b>{" "}
-                {data.razao_social}
-              </p>
-
-              <p>
-                <b>Nome Fantasia:</b>{" "}
-                {data.nome_fantasia || "-"}
-              </p>
-
-              <p>
-                <b>Capital Social:</b>{" "}
-                {formatMoney(data.capital_social)}
-              </p>
-
-              <p>
-                <b>Porte:</b>{" "}
-                {data.porte?.descricao}
-              </p>
-
-              <p>
-                <b>Natureza Jurídica:</b>{" "}
-                {data.natureza_juridica?.descricao}
-              </p>
-            </div>
-
-            {/* LOCALIZAÇÃO */}
-            <div
-              style={{
-                background: "#000",
-                padding: 15,
-                marginBottom: 20,
-              }}
-            >
-              <h2>Localização</h2>
-
-              <p>
-                {e?.logradouro}, {e?.numero}
-              </p>
-
+            <Card title="Endereço">
+              <p>{e?.logradouro}, {e?.numero}</p>
               <p>{e?.bairro}</p>
+              <p>{e?.cidade?.nome} - {e?.estado?.sigla}</p>
+              <p>CEP: {e?.cep}</p>
+            </Card>
 
-              <p>
-                {e?.cidade?.nome} -{" "}
-                {e?.estado?.sigla}
-              </p>
+            <Card title="Contato">
+              <p>Telefone: ({e?.ddd1}) {e?.telefone1}</p>
+              <p>Email: {e?.email}</p>
+            </Card>
 
-              <p>
-                <b>CEP:</b> {e?.cep}
-              </p>
-            </div>
-
-            {/* CONTATO */}
-            <div
-              style={{
-                background: "#000",
-                padding: 15,
-                marginBottom: 20,
-              }}
-            >
-              <h2>Contato</h2>
-
-              <p>
-                <b>Telefone:</b> ({e?.ddd1}){" "}
-                {e?.telefone1}
-              </p>
-
-              <p>
-                <b>Email:</b> {e?.email}
-              </p>
-            </div>
-
-            {/* FISCAL */}
-            <div
-              style={{
-                background: "#000",
-                padding: 15,
-                marginBottom: 20,
-              }}
-            >
-              <h2>Fiscal</h2>
-
-              <p>
-                <b>Simples Nacional:</b>{" "}
-                {formatBoolean(
-                  data.simples?.simples
-                )}
-              </p>
-
-              <p>
-                <b>Entrada no Simples:</b>{" "}
-                {formatDate(
-                  data.simples?.data_opcao_simples
-                )}
-              </p>
-
-              <p>
-                <b>Saída do Simples:</b>{" "}
-                {formatDate(
-                  data.simples?.data_exclusao_simples
-                )}
-              </p>
+            <Card title="Fiscal">
+              <p>Simples: {formatBoolean(data.simples?.simples)}</p>
+              <p>Entrada Simples: {formatDate(data.simples?.data_opcao_simples)}</p>
+              <p>Saída Simples: {formatDate(data.simples?.data_exclusao_simples)}</p>
 
               <br />
 
+              <p>MEI: {formatBoolean(data.simples?.mei)}</p>
+              <p>Entrada MEI: {formatDate(data.simples?.data_opcao_mei)}</p>
+              <p>Saída MEI: {formatDate(data.simples?.data_exclusao_mei)}</p>
+            </Card>
+
+            <Card title="Atividade Principal">
               <p>
-                <b>MEI:</b>{" "}
-                {formatBoolean(
-                  data.simples?.mei
-                )}
+                {e?.atividade_principal?.descricao}
               </p>
+            </Card>
 
-              <p>
-                <b>Entrada no MEI:</b>{" "}
-                {formatDate(
-                  data.simples?.data_opcao_mei
-                )}
-              </p>
-
-              <p>
-                <b>Saída do MEI:</b>{" "}
-                {formatDate(
-                  data.simples?.data_exclusao_mei
-                )}
-              </p>
-
-              <br />
-
-              <p>
-                <b>Inscrição Estadual:</b>{" "}
-                {e?.inscricoes_estaduais?.[0]
-                  ?.inscricao_estadual || "-"}
-              </p>
-            </div>
-
-            {/* ATIVIDADE */}
-            <div
-              style={{
-                background: "#000",
-                padding: 15,
-                marginBottom: 20,
-              }}
-            >
-              <h2>Atividade</h2>
-
-              <p>
-                <b>Principal:</b>{" "}
-                {
-                  e?.atividade_principal
-                    ?.descricao
-                }
-              </p>
-
-              <h3
-                style={{
-                  marginTop: 10,
-                }}
-              >
-                Secundárias:
-              </h3>
-
-              {e?.atividades_secundarias?.map(
-                (a, i) => (
-                  <p key={i}>
-                    • {a.descricao}
-                  </p>
-                )
-              )}
-            </div>
-
-            {/* SÓCIOS */}
-            <div
-              style={{
-                background: "#000",
-                padding: 15,
-                marginBottom: 20,
-              }}
-            >
-              <h2>Sócios</h2>
-
+            <Card title="Sócios">
               {data.socios?.map((s, i) => (
                 <div
                   key={i}
@@ -425,66 +311,63 @@ export default function App() {
                     marginBottom: 10,
                   }}
                 >
-                  <p>
-                    <b>Nome:</b> {s.nome}
-                  </p>
-
-                  <p>
-                    <b>Qualificação:</b>{" "}
-                    {
-                      s.qualificacao_socio
-                        ?.descricao
-                    }
-                  </p>
-
-                  <p>
-                    <b>Entrada:</b>{" "}
-                    {formatDate(
-                      s.data_entrada
-                    )}
-                  </p>
+                  <p><b>{s.nome}</b></p>
+                  <p>{s.qualificacao_socio?.descricao}</p>
                 </div>
               ))}
-            </div>
+            </Card>
           </>
         )}
 
         {/* HISTÓRICO */}
-        <div
-          style={{
-            background: "#000",
-            padding: 15,
-            marginTop: 20,
-          }}
-        >
-          <h2>Histórico</h2>
-
+        <Card title="Histórico">
           {historico.length === 0 && (
-            <p>
-              Nenhuma consulta realizada.
-            </p>
+            <p>Nenhuma consulta.</p>
           )}
 
           {historico.map((item, i) => (
             <div
               key={i}
               style={{
-                borderBottom:
-                  "1px solid #333",
+                borderBottom: "1px solid #333",
                 padding: 10,
               }}
             >
-              <p>
-                <b>{item.razao}</b>
-              </p>
-
+              <p><b>{item.razao}</b></p>
               <p>{item.cnpj}</p>
-
               <p>{item.data}</p>
             </div>
           ))}
-        </div>
+        </Card>
       </div>
+    </div>
+  );
+}
+
+const botao = {
+  background: "#1f1f1f",
+  color: "#fff",
+  border: "1px solid #333",
+  padding: "12px 18px",
+  borderRadius: 8,
+  cursor: "pointer",
+};
+
+function Card({ title, children }) {
+  return (
+    <div
+      style={{
+        background: "#000",
+        padding: 20,
+        marginBottom: 20,
+        borderRadius: 10,
+      }}
+    >
+      <h2 style={{ marginBottom: 15 }}>
+        {title}
+      </h2>
+
+      {children}
     </div>
   );
 }
