@@ -166,6 +166,45 @@ export default function App() {
           <button onClick={gerarPDF}>
             Gerar PDF
           </button>
+          <button
+  onClick={() =>
+    window.open(
+      "https://solucoes.receita.fazenda.gov.br/Servicos/certidaointernet/PJ/Emitir"
+    )
+  }
+>
+  Certidão Federal
+</button>
+
+<button
+  onClick={() =>
+    window.open(
+      "https://sintegra.sefaz.go.gov.br/"
+    )
+  }
+>
+  Certidão Estadual GO
+</button>
+
+<button
+  onClick={() =>
+    window.open(
+      "https://consulta-crf.caixa.gov.br/consultacrf/pages/consultaEmpregador.jsf"
+    )
+  }
+>
+  FGTS
+</button>
+
+<button
+  onClick={() =>
+    window.open(
+      "https://cndt-certidao.tst.jus.br/inicio.faces"
+    )
+  }
+>
+  Trabalhista
+</button>
         </div>
 
         {loading && (
