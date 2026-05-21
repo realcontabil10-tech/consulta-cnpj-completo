@@ -169,7 +169,7 @@ export default function App() {
           <button
   onClick={() =>
     window.open(
-      "https://solucoes.receita.fazenda.gov.br/Servicos/certidaointernet/PJ/Emitir"
+      "https://servicos.receitafederal.gov.br/servico/certidoes/#/home/cnpj"
     )
   }
 >
@@ -179,7 +179,7 @@ export default function App() {
 <button
   onClick={() =>
     window.open(
-      "https://sintegra.sefaz.go.gov.br/"
+      "https://www.sefaz.go.gov.br/certidao/emissao/"
     )
   }
 >
@@ -204,6 +204,15 @@ export default function App() {
   }
 >
   Trabalhista
+  <button
+  onClick={() =>
+    window.open(
+      "https://varjao.centi.com.br/servicos/certidaonegativa"
+    )
+  }
+>
+  Certidão Municipal Varjão
+</button>
 </button>
         </div>
 
